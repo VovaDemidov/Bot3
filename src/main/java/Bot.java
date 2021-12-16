@@ -3,6 +3,7 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.PhotoSize;
+import com.pengrad.telegrambot.model.Video;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
@@ -99,7 +100,7 @@ public class Bot {
 
                         System.out.println("____________________");
 
-                        String FullPath = path[0] + fileId + ".jpg";
+                        String downloadPath = path[0] + fileId + ".jpg";
 
 
                         String fullPath = telegramBot.getFullFilePath(file);
@@ -107,14 +108,14 @@ public class Bot {
                         System.out.println("____________________");
 
                         System.out.println(path[0]);
-                        System.out.println(FullPath);
+                        System.out.println(downloadPath);
                         System.out.println("____________________");
 
 
                         try {
                             URL url = new URL(fullPath);
                             ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-                            FileOutputStream fileOutputStream = new FileOutputStream(FullPath);
+                            FileOutputStream fileOutputStream = new FileOutputStream(downloadPath);
                             fileOutputStream.getChannel()
                                     .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
                             fileOutputStream.close();
@@ -134,6 +135,61 @@ public class Bot {
 
 
                     }
+
+
+                    if (updates.get(i)
+                            .message()
+                            .video() != null) {
+
+                        chatId = updates.get(i)
+                                .message()
+                                .chat()
+                                .id();
+
+
+                        Video video = updates.get(i)
+                                .message()
+                                .video();
+
+                        String fileId = video.fileId();
+
+                        SendResponse response = telegramBot.execute(new SendMessage(chatId, "Current path is: " + path[0]));
+                        response = telegramBot.execute(new SendPhoto(chatId, fileId));
+
+                        GetFile fileRequest = new GetFile(fileId);
+                        GetFileResponse getFileResponse = telegramBot.execute(fileRequest);
+
+                        File file = getFileResponse.file();
+
+                        String downloadPath = path[0] + fileId + ".mp4";
+
+
+                        String fullPath = telegramBot.getFullFilePath(file);
+
+                        response = telegramBot.execute(new SendMessage(chatId, fullPath));
+
+                        response = telegramBot.execute(new SendMessage(chatId, "Next"));
+
+
+                        try {
+                            URL url = new URL(fullPath);
+                            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                            FileOutputStream fileOutputStream = new FileOutputStream(downloadPath);
+                            fileOutputStream.getChannel()
+                                    .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                            fileOutputStream.close();
+                            readableByteChannel.close();
+
+
+                        } catch (MalformedURLException ex) {
+                            ex.printStackTrace();
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+
+
+                    }
+
 
                 }
 
