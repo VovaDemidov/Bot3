@@ -194,16 +194,23 @@ public class Bot {
 
                         File file = getFileResponse.file();
 
-                        String downloadPath = telegramBot.getFullFilePath(file);
 
-                        String fileSavePath = path[0] + fileId + downloadPath.substring(downloadPath.lastIndexOf('.'));
+                        try {
+                            String downloadPath = telegramBot.getFullFilePath(file);
 
-                        response = telegramBot.execute(new SendMessage(chatId, downloadPath));
+                            String fileSavePath = path[0] + fileId + downloadPath.substring(downloadPath.lastIndexOf('.'));
 
-                        response = telegramBot.execute(new SendMessage(chatId, "Next"));
+                            response = telegramBot.execute(new SendMessage(chatId, downloadPath));
 
+                            response = telegramBot.execute(new SendMessage(chatId, "Next"));
 
-                        Bot.saveFile(downloadPath, fileSavePath);
+                            Bot.saveFile(downloadPath, fileSavePath);
+
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                            response = telegramBot.execute(new SendMessage(chatId, "File is Null "));
+
+                        }
 
 
                     }
