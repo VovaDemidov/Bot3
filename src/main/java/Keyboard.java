@@ -1,7 +1,7 @@
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 
-public abstract class Keyboard {
+public class Keyboard {
 
     public static InlineKeyboardMarkup sendKeyboard() {
 
