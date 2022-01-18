@@ -21,16 +21,16 @@ public class Bot {
     public static void saveFile(String downloadPath, String fileSavePath) {
 
 
-        try {
-            URL url = new URL(downloadPath);
-            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-            FileOutputStream fileOutputStream = new FileOutputStream(fileSavePath);
-            fileOutputStream.getChannel()
-                    .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-            fileOutputStream.close();
-            readableByteChannel.close();
+        try  { URL url = new URL(downloadPath);
+            try (ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream()); FileOutputStream fileOutputStream = new FileOutputStream(fileSavePath)) {
+               // URL url = new URL(downloadPath);
+               // ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+               // FileOutputStream fileOutputStream = new FileOutputStream(fileSavePath);
+                fileOutputStream.getChannel()
+                        .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
 
 
+            }
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ioException) {
